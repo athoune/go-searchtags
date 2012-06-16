@@ -1,16 +1,16 @@
 package main
 
 import (
-	"fmt"
 	"github.com/pmylund/go-bitset"
 	"math/rand"
-	"testing"
 )
 
-func TestSearch(t *testing.T) {
+var docs documents
+
+func loadData() {
 	var DOCS_SIZE uint32 = 50000
 	var TAGS_SIZE uint64 = 1024
-	docs := NewDocuments(DOCS_SIZE, TAGS_SIZE)
+	docs = NewDocuments(DOCS_SIZE, TAGS_SIZE)
 	var i uint32
 	for i = 0; i < DOCS_SIZE; i++ {
 		d := bitset.New64(TAGS_SIZE)
@@ -25,10 +25,4 @@ func TestSearch(t *testing.T) {
 	for j := 0; j < 200; j++ {
 		d.Set(uint64(rand.Int63n(int64(TAGS_SIZE))))
 	}
-	cpt := 0
-	docs.Score(d, 0.2, func(id uint32, score uint64) {
-		/*fmt.Println(id, score)*/
-		cpt += 1
-	})
-	fmt.Println("documents found", cpt)
 }
