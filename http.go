@@ -26,12 +26,12 @@ func doSearch(w http.ResponseWriter, req *http.Request) {
 	h.Set("Connection", "keep-alive")
 	w.WriteHeader(200)
 	w.Write([]byte("["))
-	docs.Score(
+	docScores := docs.Score(
 		NewDocument(toInt(strings.Split(q[0], ","))),
-		0.2,
-		func(docid uint32, score uint64) {
-			w.Write([]byte(fmt.Sprintf("%d,", docid)))
-		})
+		0.2)
+	for _, ds := range docScores {
+		w.Write([]byte(fmt.Sprintf("%d,", ds.doc)))
+	}
 	w.Write([]byte("]"))
 }
 
