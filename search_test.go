@@ -25,10 +25,6 @@ func TestSearch(t *testing.T) {
 	for j := 0; j < 200; j++ {
 		d.Set(uint64(rand.Int63n(int64(TAGS_SIZE))))
 	}
-	cpt := 0
-	docs.Score(d, 0.2, func(id uint32, score uint64) {
-		/*fmt.Println(id, score)*/
-		cpt += 1
-	})
-	fmt.Println("documents found", cpt)
+    r := docs.Score(d, 0.2)
+	fmt.Println("documents found", len(r))
 }
