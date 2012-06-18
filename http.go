@@ -3,6 +3,7 @@ package main
 import (
 	/*"encoding/json"*/
 	"fmt"
+	"github.com/bmizerany/pat"
 	"log"
 	"net/http"
 	"strconv"
@@ -38,7 +39,7 @@ func doSearch(w http.ResponseWriter, req *http.Request) {
 }
 
 func doSimilar(w http.ResponseWriter, req *http.Request) {
-	id64, _ := strconv.ParseInt(req.URL.Query()["id"][0], 10, 32)
+	id64, _ := strconv.ParseInt(req.URL.Query().Get("name"), 10, 32)
 	id := uint32(id64)
 	h := w.Header()
 	h.Set("Content-Type", "text/event-stream")
@@ -60,8 +61,10 @@ func doSimilar(w http.ResponseWriter, req *http.Request) {
 }
 
 func startHttp() {
-	http.HandleFunc("/search", doSearch)
-	http.HandleFunc("/similar", doSimilar)
+	m := pat.New()
+	m.Get("/search", http.HandlerFunc(doSearch))
+	m.Get("/similar/:doc", http.HandlerFunc(doSimilar))
+	http.Handle("/", m)
 	log.Printf("About to start http://localhost:8000")
 	err := http.ListenAndServe("localhost:8000", nil)
 	if err != nil {

@@ -30,7 +30,7 @@ When application starts, 50k documents is randomly generated.
 
 In another terminal:
 
-    curl http://localhost:8000/similar?id=42
+    curl http://localhost:8000/similar/42
 
 Looking for document like document 42.
 
