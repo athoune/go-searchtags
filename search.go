@@ -19,6 +19,11 @@ type docScores struct {
 	store []*docScore
 }
 
+type queryAnswer struct {
+	query  *bitset.Bitset64
+	answer chan []*docScore
+}
+
 func (self docScores) Len() int { return len(self.store) }
 
 func (self docScores) Swap(i, j int) {
@@ -76,4 +81,11 @@ func (self *documents) Score(
 	}
 	sort.Sort(byScore{results})
 	return results.store
+}
+
+func StartSearch() {
+	for {
+		qa := <-searchQueue
+		qa.answer <- docs.Score(qa.query, 0.2)
+	}
 }

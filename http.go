@@ -26,9 +26,11 @@ func doSearch(w http.ResponseWriter, req *http.Request) {
 	h.Set("Connection", "keep-alive")
 	w.WriteHeader(200)
 	w.Write([]byte("["))
-	docScores := docs.Score(
+	answer := make(chan []*docScore)
+	searchQueue <- queryAnswer{
 		NewDocument(toInt(strings.Split(q[0], ","))),
-		0.2)
+		answer}
+	docScores := <-answer
 	for _, ds := range docScores {
 		w.Write([]byte(fmt.Sprintf("%d,", ds.doc)))
 	}
