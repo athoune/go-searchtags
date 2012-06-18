@@ -6,6 +6,7 @@ import (
 )
 
 var docs documents
+var tag_bonus map[int]*bitset.Bitset64
 
 func loadData() {
 	var DOCS_SIZE uint32 = 50000
@@ -25,4 +26,13 @@ func loadData() {
 	for j := 0; j < 200; j++ {
 		d.Set(uint64(rand.Int63n(int64(TAGS_SIZE))))
 	}
+	tag_bonus = make(map[int]*bitset.Bitset64, 5)
+	for i := 1; i < 5; i++ {
+		d := bitset.New64(TAGS_SIZE)
+		for j := 0; j < 200; j++ {
+			d.Set(uint64(rand.Int63n(int64(TAGS_SIZE))))
+		}
+		tag_bonus[i] = d
+	}
+
 }

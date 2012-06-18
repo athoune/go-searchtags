@@ -6,7 +6,7 @@ import (
 )
 
 type documents struct {
-	tags []bitset.Bitset64
+	tags []*bitset.Bitset64
 	size uint64
 }
 
@@ -52,7 +52,7 @@ func (self byScore) Less(i, j int) bool {
 
 func NewDocuments(docs uint32, tags uint64) documents {
 	return documents{
-		make([]bitset.Bitset64, docs),
+		make([]*bitset.Bitset64, docs),
 		tags}
 }
 
@@ -65,17 +65,19 @@ func NewDocument(ids []uint64) *bitset.Bitset64 {
 }
 
 func (self *documents) Set(pos uint32, tag *bitset.Bitset64) {
-	self.tags[pos] = *tag
+	self.tags[pos] = tag
 }
 
-func (self *documents) Score(
-	master *bitset.Bitset64,
-	thresold_ float32) []*docScore {
+func (self *documents) Score(master *bitset.Bitset64, thresold_ float32) []*docScore {
 	thresold := uint64(float64(thresold_) * float64(master.Count()))
 	var results docScores = docScores{make([]*docScore, 0, 4)}
 	for i, document := range self.tags {
-		common := master.Intersection(&document).Count()
+		inter := master.Intersection(document)
+		common := inter.Count()
 		if common > thresold {
+			/*for k, v := range tag_bonus {*/
+			/*common += inter.Intersection(v).Count() * uint64(k)*/
+			/*}*/
 			results.Add(&docScore{uint32(i), common})
 		}
 	}
