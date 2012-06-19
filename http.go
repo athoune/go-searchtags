@@ -57,7 +57,6 @@ func doSimilar(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 	w.Write([]byte("]"))
-
 }
 
 func startHttp() {

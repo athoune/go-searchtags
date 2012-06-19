@@ -5,11 +5,6 @@ import (
 	"sort"
 )
 
-type documents struct {
-	tags []*bitset.Bitset64
-	size uint64
-}
-
 type docScore struct {
 	doc   uint32
 	score uint64
@@ -50,24 +45,6 @@ func (self byScore) Less(i, j int) bool {
 	return self.docScores.store[i].score < self.docScores.store[j].score
 }
 
-func NewDocuments(docs uint32, tags uint64) documents {
-	return documents{
-		make([]*bitset.Bitset64, docs),
-		tags}
-}
-
-func NewDocument(ids []uint64) *bitset.Bitset64 {
-	b := bitset.New64(0)
-	for _, id := range ids {
-		b.Set(id)
-	}
-	return b
-}
-
-func (self *documents) Set(pos uint32, tag *bitset.Bitset64) {
-	self.tags[pos] = tag
-}
-
 func (self *documents) Score(master *bitset.Bitset64, thresold_ float32) []*docScore {
 	thresold := uint64(float64(thresold_) * float64(master.Count()))
 	var results docScores = docScores{make([]*docScore, 0, 4)}
@@ -75,9 +52,9 @@ func (self *documents) Score(master *bitset.Bitset64, thresold_ float32) []*docS
 		inter := master.Intersection(document)
 		common := inter.Count()
 		if common > thresold {
-			/*for k, v := range tag_bonus {*/
-			/*common += inter.Intersection(v).Count() * uint64(k)*/
-			/*}*/
+			for k, v := range docs.bonus {
+				common += inter.Intersection(v).Count() * uint64(k)
+			}
 			results.Add(&docScore{uint32(i), common})
 		}
 	}
@@ -85,6 +62,9 @@ func (self *documents) Score(master *bitset.Bitset64, thresold_ float32) []*docS
 	return results.store
 }
 
+//func (self *documents) Cluster(ids []uint32) {
+
+/* A worker for handling search without fulling memory */
 func StartSearch() {
 	for {
 		qa := <-searchQueue
